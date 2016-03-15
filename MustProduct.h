@@ -18,6 +18,9 @@ public:
 
 class MustVanilleSwap : public MustProduct
 {
+public:
+	MustVanilleSwap(Real nominal, Date settlementDate, Date maturity, Frequency fixedLegFrequency, DayCounter fixedLegDayCounter, Rate fixedRate, DayCounter floatingLegDayCounter, Frequency floatingLegFrequency);
+
 	double Price(Handle<QuantLib::YieldTermStructure> discountingTermStructure, Handle<QuantLib::YieldTermStructure> forwardingTermStructure) override;
 	//paramètres
 	//Notionnel

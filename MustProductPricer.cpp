@@ -1,4 +1,5 @@
 #include <ql/quantlib.hpp>
+#include "MustProduct.h"
 
 using namespace std;
 using namespace QuantLib;
@@ -6,6 +7,7 @@ using namespace boost;
 
 int main()
 {
+	//MarketData
 	vector<Date> dates;
 	vector<DiscountFactor> discountFactor;
 
@@ -26,33 +28,13 @@ int main()
 
 	Handle<YieldTermStructure> discountingTermStructure(oisCurve);
 	Handle<YieldTermStructure> forwardingTermStructure(forwardCurve);
-
-	Real nominal = 1000000.0;
 	Date previousResetDate(20, November, 2012);
 	Date maturity(20, November, 2022);
-	double spread = 0.02;
-	double fixedRate = 0.04;
 
-	boost::shared_ptr<IborIndex> euribor(new Euribor(3 * Months, forwardingTermStructure));
-	euribor->addFixing(euribor->fixingDate(previousResetDate), 0.01, true);
 
-	VanillaSwap::Type swapType = VanillaSwap::Payer;
+	MustVanilleSwap* must_Swap = new MustVanilleSwap(100000, previousResetDate, maturity, Semiannual, Actual360(), 0.01, Actual360(), Quarterly);
 
-	Schedule fixedSchedule(previousResetDate, maturity, 1 * Years,
-		TARGET(), ModifiedFollowing, ModifiedFollowing,
-		DateGeneration::Forward, false);
+	double res = must_Swap->Price(discountingTermStructure, forwardingTermStructure);
 
-	Schedule floatSchedule(previousResetDate, maturity, 3 * Months,
-		TARGET(), ModifiedFollowing, ModifiedFollowing,
-		DateGeneration::Forward, false);
-
-	VanillaSwap swap(VanillaSwap::Payer, nominal, fixedSchedule, fixedRate, Thirty360(),
-		floatSchedule, euribor, spread, Actual360());
-
-	boost::shared_ptr<PricingEngine> swapEngine(new DiscountingSwapEngine(discountingTermStructure));
-
-	swap.setPricingEngine(swapEngine);
-
-	double res = swap.NPV();
 
 }
